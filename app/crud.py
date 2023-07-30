@@ -65,3 +65,30 @@ def create_news(db: Session, news: schemas.NewCreate):
     db.commit()
     db.refresh(db_news)
     return db_news
+
+
+def get_boards(db: Session):
+    return db.query(models.Board).all()
+
+
+def get_board_by_id(db: Session, board_id: int):
+    return db.query(models.Board).filter(models.Board.id == board_id).first()
+
+
+def create_board(db: Session, board: schemas.BoardCreate):
+    board_owner = get_user(db, user_id=board.owner_id)
+    if board_owner is None:
+        return None
+    db_board = models.Board(
+        title=board.title,
+        body=board.body,
+        owner_id=board.owner_id,
+    )
+    db.add(db_board)
+    db.commit()
+    db.refresh(db_board)
+    return db_board
+
+
+def get_discussions_by_board_id(db: Session, board_id: int):
+    return db.query(models.Discussion).filter(models.Discussion.board_id == board_id)

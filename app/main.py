@@ -105,3 +105,25 @@ def create_news(news: schemas.NewCreate, db: Session = Depends(get_db)):
     if news is None:
         raise HTTPException(status_code=400, detail="Incorrent owner_id")
     return news
+
+
+@app.get("/boards", response_model=list[schemas.Board], summary="Read All Boards")
+def read_boards(db: Session = Depends(get_db)):
+    boards = crud.get_boards(db)
+    return boards
+
+
+@app.get("/boards/{board_id}", response_model=schemas.Board, summary="Read Board by ID")
+def read_board(board_id: int, db: Session = Depends(get_db)):
+    board = crud.get_board_by_id(db, board_id=board_id)
+    if board is None:
+        raise HTTPException(status_code=404, detail="Board not found")
+    return board
+
+
+@app.post("/boards", response_model=schemas.Board)
+def create_board(board: schemas.BoardCreate, db: Session = Depends(get_db)):
+    board = crud.create_board(db=db, board=board)
+    if board is None:
+        raise HTTPException(status_code=400, detail="Incorrent owner_id")
+    return board

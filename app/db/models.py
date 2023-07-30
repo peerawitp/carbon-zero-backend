@@ -1,5 +1,6 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from .database import Base
 
@@ -17,6 +18,14 @@ class User(Base):
 
     user_type_id = Column(Integer, ForeignKey("user_types.id"), default=1)
     user_type = relationship("UserType", back_populates="users")
+
+    news = relationship("New", back_populates="owner")
+
+    boards = relationship("Board", back_populates="owner")
+    discussions = relationship("Discussion", back_populates="owner")
+    discussion_interactions = relationship(
+        "DiscussionInteraction", back_populates="owner"
+    )
 
 
 class UserType(Base):
@@ -37,4 +46,53 @@ class New(Base):
     description = Column(String)
     join_detail = Column(String)
 
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
     owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User", back_populates="news")
+
+
+class Board(Base):
+    __tablename__ = "boards"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String)
+    body = Column(String)
+
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User", back_populates="boards")
+
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    discussions = relationship("Discussion", back_populates="board")
+
+
+class Discussion(Base):
+    __tablename__ = "discussions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    body = Column(String)
+
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    board_id = Column(Integer, ForeignKey("boards.id"))
+
+    details = relationship("DiscussionInteraction", back_populates="discussion")
+
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    owner = relationship("User", back_populates="discussions")
+    board = relationship("Board", back_populates="discussions")
+
+
+class DiscussionInteraction(Base):
+    __tablename__ = "discussion_interactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    discussion_id = Column(Integer, ForeignKey("discussions.id"))
+    interaction_type = Column(String)  # dislike, like
+
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    owner = relationship("User", back_populates="discussion_interactions")
+    discussion = relationship("Discussion", back_populates="details")
