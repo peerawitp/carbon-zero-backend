@@ -1,6 +1,8 @@
 from fastapi import Depends, FastAPI, HTTPException
-from starlette.middleware.cors import CORSMiddleware
+
 from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
+
 from sqlalchemy.orm import Session
 
 from . import crud
@@ -26,11 +28,22 @@ if len(userType) == 0:
     db.refresh(db_user_type)
     db.close()
 
+middleware = [
+    Middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+        allow_credentials=True,
+    )
+]
+
 # Initial FastAPI
 app = FastAPI(
     title="carbon-zero-backend",
     version="1.0.0",
     description="very very urgent project :3",
+    middleware=middleware,
 )
 
 
@@ -90,13 +103,3 @@ def create_news(news: schemas.NewCreate, db: Session = Depends(get_db)):
     if news is None:
         raise HTTPException(status_code=400, detail="Incorrent owner_id")
     return news
-
-
-origins = ["*"]
-app = CORSMiddleware(
-    app,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
