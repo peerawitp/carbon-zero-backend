@@ -70,7 +70,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @app.post(
-    "/users/",
+    "/users",
     response_model=schemas.User,
     summary="Create User",
 )
@@ -82,7 +82,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @app.post(
-    "/login/",
+    "/login",
     response_model=schemas.LoginResponse,
     summary="Login with Email and Password",
 )
@@ -93,13 +93,13 @@ def login(email: str, password: str, db: Session = Depends(get_db)):
     return db_user
 
 
-@app.get("/news/", response_model=list[schemas.New], summary="Read All News")
+@app.get("/news", response_model=list[schemas.New], summary="Read All News")
 def read_news(db: Session = Depends(get_db)):
     news = crud.get_news(db)
     return news
 
 
-@app.post("/news/", response_model=schemas.NewCreate)
+@app.post("/news", response_model=schemas.NewCreate)
 def create_news(news: schemas.NewCreate, db: Session = Depends(get_db)):
     news = crud.create_news(db=db, news=news)
     if news is None:
