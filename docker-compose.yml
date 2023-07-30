@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --reload --host 0.0.0.0 --port 8000'
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    ports:
+      - ${PORT}:8000
+    networks:
+      - esco_app_network
+    depends_on:
+      - db
+    restart: on-failure
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - esco_app_network
+
+networks:
+  esco_app_network:
+    driver: bridge
+
+volumes:
+  db:
+    driver: local
