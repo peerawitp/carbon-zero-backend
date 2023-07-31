@@ -112,7 +112,6 @@ class DiscussionInteraction(BaseModel):
 
 
 class DiscussionInteractionCreate(BaseModel):
-    discussion_id: int
     user_id: int
     interaction_type: str
 
