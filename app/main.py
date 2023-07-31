@@ -137,22 +137,3 @@ def create_discussion(
     if discussion is None:
         raise HTTPException(status_code=400, detail="Invalid owner_id or board_id")
     return discussion
-
-
-@app.post(
-    "/discussion/{discussion_id}/interaction",
-    response_model=schemas.DiscussionInteraction,
-)
-def create_discussion_interaction(
-    discussion_id: int,
-    interaction: schemas.DiscussionInteractionCreate,
-    db: Session = Depends(get_db),
-):
-    interaction = crud.create_discussion_interaction(
-        db=db,
-        discussion_id=discussion_id,
-        discussion_interaction=interaction,
-    )
-    if interaction is None:
-        raise HTTPException(status_code=400, detail="Invalid user_id or discussion_id")
-    return interaction
