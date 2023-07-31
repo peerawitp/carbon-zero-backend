@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 
+from app.utils.certificate import make_certificate
+
 from .db import models, schemas
 
 from .utils import authentication as auth
@@ -145,3 +147,7 @@ def create_discussion_interaction(
         db.commit()
         db.refresh(db_discussion_interaction)
         return db_discussion_interaction
+
+
+def get_certificate(name: str, co2_amount: str, date: str, cert_id: str):
+    return make_certificate(name, co2_amount, date, cert_id)

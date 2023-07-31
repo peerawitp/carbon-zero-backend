@@ -1,9 +1,13 @@
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import FileResponse, StreamingResponse
 
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
 from sqlalchemy.orm import Session
+
+import base64
+import io
 
 from . import crud
 from .db import models
@@ -31,7 +35,7 @@ if len(userType) == 0:
 # Initial FastAPI
 app = FastAPI(
     title="carbon-zero-backend",
-    version="1.0.0",
+    version="1.1.0",
     description="very very urgent project :3",
 )
 
@@ -190,3 +194,15 @@ def create_discussion_interaction(
     if interaction is None:
         raise HTTPException(status_code=400, detail="Invalid user_id or discussion_id")
     return interaction
+
+
+@app.get(
+    "/cert",
+    summary="Get Certificate",
+    tags=["Certificate"],
+    response_class=FileResponse,
+)
+def get_certificate(name: str, co2_amount: str, date: str, cert_id: str):
+    base64_encoded_image = crud.get_certificate(name, co2_amount, date, cert_id)
+    base64_decoded_image = base64.b64decode(base64_encoded_image)
+    return StreamingResponse(io.BytesIO(base64_decoded_image), media_type="image/png")
