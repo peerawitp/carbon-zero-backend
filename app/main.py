@@ -61,6 +61,7 @@ def get_db():
     "/users/{user_id}",
     response_model=schemas.User,
     summary="Read User by ID",
+    tags=["Users"],
 )
 def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id=user_id)
@@ -73,6 +74,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     "/users",
     response_model=schemas.User,
     summary="Create User",
+    tags=["Users"],
 )
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
@@ -85,6 +87,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     "/login",
     response_model=schemas.LoginResponse,
     summary="Login with Email and Password",
+    tags=["Users"],
 )
 def login(email: str, password: str, db: Session = Depends(get_db)):
     db_user = crud.login_user(db, email=email, password=password)
@@ -93,13 +96,17 @@ def login(email: str, password: str, db: Session = Depends(get_db)):
     return db_user
 
 
-@app.get("/news", response_model=list[schemas.New], summary="Read All News")
+@app.get(
+    "/news", response_model=list[schemas.New], summary="Read All News", tags=["News"]
+)
 def read_news(db: Session = Depends(get_db)):
     news = crud.get_news(db)
     return news
 
 
-@app.post("/news", response_model=schemas.NewCreate)
+@app.post(
+    "/news", response_model=schemas.NewCreate, summary="Create News", tags=["News"]
+)
 def create_news(news: schemas.NewCreate, db: Session = Depends(get_db)):
     news = crud.create_news(db=db, news=news)
     if news is None:
@@ -107,13 +114,23 @@ def create_news(news: schemas.NewCreate, db: Session = Depends(get_db)):
     return news
 
 
-@app.get("/boards", response_model=list[schemas.Board], summary="Read All Boards")
+@app.get(
+    "/boards",
+    response_model=list[schemas.Board],
+    summary="Read All Boards",
+    tags=["Boards"],
+)
 def read_boards(db: Session = Depends(get_db)):
     boards = crud.get_boards(db)
     return boards
 
 
-@app.get("/boards/{board_id}", response_model=schemas.Board, summary="Read Board by ID")
+@app.get(
+    "/boards/{board_id}",
+    response_model=schemas.Board,
+    summary="Read Board by ID",
+    tags=["Boards"],
+)
 def read_board(board_id: int, db: Session = Depends(get_db)):
     board = crud.get_board_by_id(db, board_id=board_id)
     if board is None:
@@ -121,7 +138,9 @@ def read_board(board_id: int, db: Session = Depends(get_db)):
     return board
 
 
-@app.post("/boards", response_model=schemas.Board)
+@app.post(
+    "/boards", response_model=schemas.Board, summary="Create Board", tags=["Boards"]
+)
 def create_board(board: schemas.BoardCreate, db: Session = Depends(get_db)):
     board = crud.create_board(db=db, board=board)
     if board is None:
@@ -129,7 +148,11 @@ def create_board(board: schemas.BoardCreate, db: Session = Depends(get_db)):
     return board
 
 
-@app.post("/boards/{board_id}/discussion", response_model=schemas.Discussion)
+@app.post(
+    "/boards/{board_id}/discussion",
+    response_model=schemas.Discussion,
+    tags=["Discussions"],
+)
 def create_discussion(
     board_id: int, discussion: schemas.DiscussionCreate, db: Session = Depends(get_db)
 ):
@@ -137,3 +160,33 @@ def create_discussion(
     if discussion is None:
         raise HTTPException(status_code=400, detail="Invalid owner_id or board_id")
     return discussion
+
+
+@app.get(
+    "/boards/{board_id}/discussions",
+    response_model=list[schemas.Discussion],
+    tags=["Discussions"],
+)
+def read_discussions(board_id: int, db: Session = Depends(get_db)):
+    discussions = crud.get_discussions_by_board_id(db, board_id=board_id)
+    return discussions
+
+
+@app.post(
+    "/discussions/{discussion_id}/interaction",
+    response_model=schemas.DiscussionInteraction,
+    tags=["Discussions"],
+)
+def create_discussion_interaction(
+    discussion_id: int,
+    interaction: schemas.DiscussionInteractionCreate,
+    db: Session = Depends(get_db),
+):
+    interaction = crud.create_discussion_interaction(
+        db=db,
+        discussion_id=discussion_id,
+        discussion_interaction=interaction,
+    )
+    if interaction is None:
+        raise HTTPException(status_code=400, detail="Invalid user_id or discussion_id")
+    return interaction

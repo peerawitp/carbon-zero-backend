@@ -88,6 +88,7 @@ class DiscussionInteraction(Base):
     __tablename__ = "discussion_interactions"
 
     id = Column(Integer, primary_key=True, index=True)
+
     user_id = Column(Integer, ForeignKey("users.id"))
     discussion_id = Column(Integer, ForeignKey("discussions.id"))
     interaction_type = Column(String)  # dislike, like

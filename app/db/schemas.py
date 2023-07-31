@@ -85,6 +85,8 @@ class Discussion(BaseModel):
     owner_id: int
     board_id: int
 
+    details: list
+
     created_at: datetime
 
     class Config:

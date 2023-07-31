@@ -107,3 +107,41 @@ def create_discussion(db: Session, board_id: int, discussion: schemas.Discussion
     db.commit()
     db.refresh(db_discussion)
     return db_discussion
+
+
+def create_discussion_interaction(
+    db: Session,
+    discussion_id: int,
+    discussion_interaction: schemas.DiscussionInteractionCreate,
+):
+    discussion_interaction_owner = get_user(db, user_id=discussion_interaction.user_id)
+    if discussion_interaction_owner is None:
+        return None
+
+    # check if user ever interacted with this discussion
+    db_discussion_interaction = (
+        db.query(models.DiscussionInteraction)
+        .filter(
+            models.DiscussionInteraction.user_id == discussion_interaction.user_id,
+            models.DiscussionInteraction.discussion_id == discussion_id,
+        )
+        .first()
+    )
+
+    if db_discussion_interaction is None:
+        db_discussion_interaction = models.DiscussionInteraction(
+            user_id=discussion_interaction.user_id,
+            discussion_id=discussion_id,
+            interaction_type=discussion_interaction.interaction_type,
+        )
+        db.add(db_discussion_interaction)
+        db.commit()
+        db.refresh(db_discussion_interaction)
+        return db_discussion_interaction
+    else:
+        db_discussion_interaction.interaction_type = (
+            discussion_interaction.interaction_type
+        )
+        db.commit()
+        db.refresh(db_discussion_interaction)
+        return db_discussion_interaction
