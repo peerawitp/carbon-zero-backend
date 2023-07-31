@@ -94,7 +94,6 @@ class Discussion(BaseModel):
 class DiscussionCreate(BaseModel):
     body: str
     owner_id: int
-    board_id: int
 
     class Config:
         orm_mode = True

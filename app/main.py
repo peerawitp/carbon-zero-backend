@@ -89,7 +89,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 def login(email: str, password: str, db: Session = Depends(get_db)):
     db_user = crud.login_user(db, email=email, password=password)
     if db_user is None:
-        raise HTTPException(status_code=401, detail="Incorrect email or password")
+        raise HTTPException(status_code=401, detail="Invalid email or password")
     return db_user
 
 
@@ -103,7 +103,7 @@ def read_news(db: Session = Depends(get_db)):
 def create_news(news: schemas.NewCreate, db: Session = Depends(get_db)):
     news = crud.create_news(db=db, news=news)
     if news is None:
-        raise HTTPException(status_code=400, detail="Incorrent owner_id")
+        raise HTTPException(status_code=400, detail="Invalid owner_id")
     return news
 
 
@@ -125,5 +125,15 @@ def read_board(board_id: int, db: Session = Depends(get_db)):
 def create_board(board: schemas.BoardCreate, db: Session = Depends(get_db)):
     board = crud.create_board(db=db, board=board)
     if board is None:
-        raise HTTPException(status_code=400, detail="Incorrent owner_id")
+        raise HTTPException(status_code=400, detail="Invalid owner_id")
     return board
+
+
+@app.post("/boards/{board_id}/discussion", response_model=schemas.Discussion)
+def create_discussion(
+    board_id: int, discussion: schemas.DiscussionCreate, db: Session = Depends(get_db)
+):
+    discussion = crud.create_discussion(db=db, board_id=board_id, discussion=discussion)
+    if discussion is None:
+        raise HTTPException(status_code=400, detail="Invalid owner_id or board_id")
+    return discussion

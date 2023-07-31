@@ -91,4 +91,19 @@ def create_board(db: Session, board: schemas.BoardCreate):
 
 
 def get_discussions_by_board_id(db: Session, board_id: int):
-    return db.query(models.Discussion).filter(models.Discussion.board_id == board_id)
+    return (
+        db.query(models.Discussion).filter(models.Discussion.board_id == board_id).all()
+    )
+
+
+def create_discussion(db: Session, board_id: int, discussion: schemas.DiscussionCreate):
+    discussion_owner = get_user(db, user_id=discussion.owner_id)
+    if discussion_owner is None:
+        return None
+    db_discussion = models.Discussion(
+        body=discussion.body, owner_id=discussion.owner_id, board_id=board_id
+    )
+    db.add(db_discussion)
+    db.commit()
+    db.refresh(db_discussion)
+    return db_discussion
