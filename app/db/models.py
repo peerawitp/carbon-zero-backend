@@ -16,6 +16,8 @@ class User(Base):
     lastname = Column(String, nullable=False)
     mobile_phone = Column(String, nullable=False)
 
+    xp = Column(Integer, default=0)
+
     user_type_id = Column(Integer, ForeignKey("user_types.id"), default=1)
     user_type = relationship("UserType", back_populates="users")
     user_carbon = relationship("UserCarbon", back_populates="user")

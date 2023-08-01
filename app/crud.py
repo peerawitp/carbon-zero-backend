@@ -65,8 +65,16 @@ def create_user_carbon(db: Session, user_carbon: schemas.UserCarbonCreate):
         fee=user_carbon.fee,
     )
     db.add(db_user_carbon)
+
+    db_user = (
+        db.query(models.User).filter(models.User.id == user_carbon.user_id).first()
+    )
+    db_user.xp += 0.25 * user_carbon.carbon_offset
+    db.add(db_user)
+
     db.commit()
     db.refresh(db_user_carbon)
+    db.refresh(db_user)
 
     return db_user_carbon
 

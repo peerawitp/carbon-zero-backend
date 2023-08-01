@@ -10,6 +10,7 @@ class User(BaseModel):
     lastname: str
     mobile_phone: str
     user_type_id: int
+    xp: int
 
     user_carbon: list
 
