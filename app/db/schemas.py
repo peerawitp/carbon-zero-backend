@@ -11,6 +11,8 @@ class User(BaseModel):
     mobile_phone: str
     user_type_id: int
 
+    user_carbon: list
+
     class Config:
         underscore_attrs_are_private = True
         orm_mode = True
@@ -30,6 +32,29 @@ class UserCreate(BaseModel):
 class LoginResponse(BaseModel):
     access_token: str
     data: User
+
+
+class UserCarbon(BaseModel):
+    id: int
+    user_id: int
+    carbon_offset: float
+    donate_amount: float
+    fee: float
+
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+class UserCarbonCreate(BaseModel):
+    user_id: int
+    carbon_offset: float
+    donate_amount: float
+    fee: float
+
+    class Config:
+        orm_mode = True
 
 
 class New(BaseModel):

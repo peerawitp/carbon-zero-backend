@@ -18,6 +18,7 @@ class User(Base):
 
     user_type_id = Column(Integer, ForeignKey("user_types.id"), default=1)
     user_type = relationship("UserType", back_populates="users")
+    user_carbon = relationship("UserCarbon", back_populates="user")
 
     news = relationship("New", back_populates="owner")
 
@@ -35,6 +36,21 @@ class UserType(Base):
     name = Column(String)
 
     users = relationship("User", back_populates="user_type")
+
+
+class UserCarbon(Base):
+    __tablename__ = "user_carbon"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="user_carbon")
+
+    carbon_offset = Column(Float)
+    donate_amount = Column(Float)
+    fee = Column(Float)
+
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
 
 class New(Base):

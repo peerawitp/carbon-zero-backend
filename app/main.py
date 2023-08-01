@@ -101,6 +101,34 @@ def login(email: str, password: str, db: Session = Depends(get_db)):
 
 
 @app.get(
+    "/carbon",
+    response_model=list[schemas.UserCarbon],
+    summary="Read User Carbon",
+    tags=["Carbon"],
+)
+def read_user_carbon(user_id: int, db: Session = Depends(get_db)):
+    user_carbon = crud.get_user_carbon(db, user_id=user_id)
+    if user_carbon is None:
+        raise HTTPException(status_code=404, detail="No donate not found")
+    return user_carbon
+
+
+@app.post(
+    "/carbon",
+    response_model=schemas.UserCarbon,
+    summary="Create User Carbon Donate",
+    tags=["Carbon"],
+)
+def create_user_carbon(
+    user_carbon: schemas.UserCarbonCreate, db: Session = Depends(get_db)
+):
+    user_carbon = crud.create_user_carbon(db=db, user_carbon=user_carbon)
+    if user_carbon is None:
+        raise HTTPException(status_code=400, detail="Invalid user_id")
+    return user_carbon
+
+
+@app.get(
     "/news", response_model=list[schemas.New], summary="Read All News", tags=["News"]
 )
 def read_news(db: Session = Depends(get_db)):

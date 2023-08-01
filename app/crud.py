@@ -48,6 +48,29 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
+def get_user_carbon(db: Session, user_id: int):
+    return (
+        db.query(models.UserCarbon).filter(models.UserCarbon.user_id == user_id).all()
+    )
+
+
+def create_user_carbon(db: Session, user_carbon: schemas.UserCarbonCreate):
+    user = get_user(db, user_id=user_carbon.user_id)
+    if user is None:
+        return None
+    db_user_carbon = models.UserCarbon(
+        user_id=user_carbon.user_id,
+        carbon_offset=user_carbon.carbon_offset,
+        donate_amount=user_carbon.donate_amount,
+        fee=user_carbon.fee,
+    )
+    db.add(db_user_carbon)
+    db.commit()
+    db.refresh(db_user_carbon)
+
+    return db_user_carbon
+
+
 def get_news(db: Session):
     return db.query(models.New).all()
 
