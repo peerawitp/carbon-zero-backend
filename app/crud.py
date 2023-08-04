@@ -66,7 +66,7 @@ def create_user_carbon(db: Session, user_carbon: schemas.UserCarbonCreate):
     db.refresh(db_user_carbon)
 
     db_user = get_user(db, user_id=user_carbon.user_id)
-    db_user.xp += 0.25 * user_carbon.donate_amount
+    db_user.xp += 0.2 * user_carbon.donate_amount
     db.commit()
     db.refresh(db_user)
 
