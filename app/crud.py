@@ -188,3 +188,22 @@ def create_discussion_interaction(
 
 def get_certificate(name: str, co2_amount: str, date: str, cert_id: str):
     return make_certificate(name, co2_amount, date, cert_id)
+
+
+def get_cert_by_carbon_id(db: Session, carbon_id: int):
+    detail = (
+        db.query(models.UserCarbon, models.User)
+        .join(models.User, models.UserCarbon.user_id == models.User.id)
+        .filter(models.UserCarbon.id == carbon_id)
+        .first()
+    )
+    if detail is None:
+        return None
+    cert = get_certificate(
+        name=detail.User.name + " " + detail.User.lastname,
+        co2_amount=str(detail.UserCarbon.carbon_offset),
+        date=str(detail.UserCarbon.created_at.strftime("%d/%m/%Y")),
+        cert_id="RCC" + str(detail.UserCarbon.id).zfill(10),
+    )
+
+    return cert

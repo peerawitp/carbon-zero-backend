@@ -241,3 +241,14 @@ def get_certificate(name: str, co2_amount: str, date: str, cert_id: str):
     base64_encoded_image = crud.get_certificate(name, co2_amount, date, cert_id)
     base64_decoded_image = base64.b64decode(base64_encoded_image)
     return StreamingResponse(io.BytesIO(base64_decoded_image), media_type="image/png")
+
+
+@app.get(
+    "/cert/{carbon_id}", summary="Get Certificate with carbon_id", tags=["Certificate"]
+)
+def get_cert_by_carbon_id(carbon_id: int, db: Session = Depends(get_db)):
+    cert = crud.get_cert_by_carbon_id(db, carbon_id)
+    if cert is None:
+        raise HTTPException(status_code=404, detail="Certificate not found")
+    base64_decoded_image = base64.b64decode(cert)
+    return StreamingResponse(io.BytesIO(base64_decoded_image), media_type="image/png")
