@@ -82,7 +82,7 @@ def create_user_carbon(db: Session, user_carbon: schemas.UserCarbonCreate):
 def get_all_carbon(db: Session):
     all_carbon = db.query(models.UserCarbon).all()
     all_carbon_offset = sum([carbon.carbon_offset for carbon in all_carbon])
-    return {"all_carbon_offset": all_carbon_offset}
+    return {"all_carbon_offset": all_carbon_offset, "all_carbon": all_carbon}
 
 
 def get_news(db: Session):

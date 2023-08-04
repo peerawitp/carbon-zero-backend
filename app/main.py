@@ -129,10 +129,10 @@ def create_user_carbon(
 
 
 # get all sum carbon offset
-@app.get("/carbon/sum", summary="Get All Carbon Offset", tags=["Carbon"])
+@app.get("/carbon/all", summary="Get All Carbon Details", tags=["Carbon"])
 def get_all_carbon(db: Session = Depends(get_db)):
-    sum_carbon_offset = crud.get_all_carbon(db)
-    return sum_carbon_offset
+    all_carbon = crud.get_all_carbon(db)
+    return all_carbon
 
 
 @app.get(
