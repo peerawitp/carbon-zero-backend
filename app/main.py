@@ -148,9 +148,7 @@ def read_news(db: Session = Depends(get_db)):
     return news
 
 
-@app.post(
-    "/news", response_model=schemas.NewCreate, summary="Create News", tags=["News"]
-)
+@app.post("/news", response_model=schemas.New, summary="Create News", tags=["News"])
 def create_news(news: schemas.NewCreate, db: Session = Depends(get_db)):
     news = crud.create_news(db=db, news=news)
     if news is None:
