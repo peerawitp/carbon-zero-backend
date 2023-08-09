@@ -66,6 +66,19 @@ class New(BaseModel):
     join_detail: str
     owner_id: int
 
+    images: list
+
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+class NewImage(BaseModel):
+    id: int
+    new_id: int
+    image: str
+
     created_at: datetime
 
     class Config:

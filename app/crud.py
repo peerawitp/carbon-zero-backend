@@ -83,6 +83,10 @@ def get_news(db: Session):
     return db.query(models.New).all()
 
 
+def get_news_by_id(db: Session, new_id: int):
+    return db.query(models.New).filter(models.New.id == new_id).first()
+
+
 def create_news(db: Session, news: schemas.NewCreate):
     new_owner = get_user(db, user_id=news.owner_id)
     if new_owner is None:
@@ -201,3 +205,12 @@ def get_cert_by_carbon_id(db: Session, carbon_id: int):
     )
 
     return cert
+
+
+def upload_new_image(db: Session, new_id: int, image_path: str):
+    db_new_image = models.NewImage(image=image_path + ".jpg", new_id=new_id)
+    db.add(db_new_image)
+    db.commit()
+    db.refresh(db_new_image)
+
+    return db_new_image

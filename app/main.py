@@ -1,4 +1,5 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, File, UploadFile
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
 
 from starlette.middleware import Middleware
@@ -8,6 +9,8 @@ from sqlalchemy.orm import Session
 
 import base64
 import io
+import random
+import string
 
 from . import crud
 from .db import models
@@ -35,7 +38,7 @@ if len(userType) == 0:
 # Initial FastAPI
 app = FastAPI(
     title="carbon-zero-backend",
-    version="1.1.0",
+    version="1.2.0",
     description="very very urgent project :3",
 )
 
@@ -51,6 +54,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/imgs", StaticFiles(directory="app/imgs"), name="imgs")
 
 
 def get_db():
@@ -252,3 +257,32 @@ def get_cert_by_carbon_id(carbon_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Certificate not found")
     base64_decoded_image = base64.b64decode(cert)
     return StreamingResponse(io.BytesIO(base64_decoded_image), media_type="image/png")
+
+
+@app.post(
+    "/uploadNewImage",
+    summary="Upload New Image",
+    tags=["Upload"],
+)
+def upload_new_image(
+    news_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    check = crud.get_news_by_id(db, news_id)
+    if check is None:
+        raise HTTPException(status_code=404, detail="News not found")
+
+    if file.content_type not in ["image/jpeg", "image/jpg"]:
+        raise HTTPException(
+            status_code=400, detail="Invalid file type, only jpeg accept"
+        )
+
+    uploadname = "new_" + "".join(random.choices(string.ascii_lowercase, k=10))
+    if file:
+        with open(f"app/imgs/{uploadname}.jpg", "wb") as buffer:
+            buffer.write(file.file.read())
+
+        upload = crud.upload_new_image(db, news_id, uploadname)
+
+    return upload

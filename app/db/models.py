@@ -64,10 +64,24 @@ class New(Base):
     description = Column(String)
     join_detail = Column(String)
 
+    images = relationship("NewImage", back_populates="new")
+
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="news")
+
+
+class NewImage(Base):
+    __tablename__ = "new_images"
+
+    id = Column(Integer, primary_key=True, index=True)
+    image = Column(String)
+
+    new_id = Column(Integer, ForeignKey("news.id"))
+    new = relationship("New", back_populates="images")
+
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
 
 class Board(Base):
