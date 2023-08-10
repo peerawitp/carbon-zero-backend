@@ -220,7 +220,7 @@ def get_all_hotels(db: Session):
     return db.query(models.Hotel).all()
 
 
-def get_hotel_by_room_id(db: Session, room_id: int):
+def get_info_by_room_id(db: Session, room_id: int):
     return (
         db.query(models.Room, models.Hotel, models.Booking)
         .join(models.Hotel, models.Room.hotel_id == models.Hotel.hotel_id)

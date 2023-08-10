@@ -309,14 +309,13 @@ def get_available_rooms(hotel_id: int, db: Session = Depends(get_db)):
 
 
 @app.get(
-    "/getHotelByRoomId/{room_id}",
-    summary="Get Hotel by Room ID",
+    "/getRoomInfo/{room_id}",
+    summary="Get Info by Room ID",
     tags=["Hotels"],
-    response_model=schemas.Hotel,
 )
-def get_hotel_by_room_id(room_id: int, db: Session = Depends(get_db)):
-    hotel = crud.get_hotel_by_room_id(db, room_id)
-    return hotel["Hotel"]
+def get_info_by_room_id(room_id: int, db: Session = Depends(get_db)):
+    info = crud.get_info_by_room_id(db, room_id)
+    return info
 
 
 @app.get(
