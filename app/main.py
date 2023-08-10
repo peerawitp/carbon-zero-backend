@@ -368,7 +368,7 @@ def get_all_events(db: Session = Depends(get_db)):
     "/bookEvent",
     summary="Book Event",
     tags=["Events"],
-    response_model=schemas.EventBooking,
+    response_model=list[schemas.EventBooking],
 )
 def book_event(event: schemas.EventBookingCreate, db: Session = Depends(get_db)):
     event = crud.book_event(db, event)
@@ -390,3 +390,18 @@ def get_all_event_bookings(db: Session = Depends(get_db)):
 def get_summary_event(event_id: int, db: Session = Depends(get_db)):
     summary = crud.get_summary_event(db, event_id)
     return {"summary_income": summary}
+
+
+@app.get(
+    "/getUserBookedEvent/{user_id}",
+    summary="Get User Booked Event",
+    tags=["Users"],
+)
+def get_user_booked_event(user_id: int, db: Session = Depends(get_db)):
+    events = crud.get_user_booked_event(db, user_id)
+    return events
+
+@app.get("/getUserBookedHotel/{user_id}", summary="Get User Booked Hotel", tags=["Users"])
+def get_user_booked_hotel(user_id: int, db: Session = Depends(get_db)):
+    hotels = crud.get_user_booked_hotel(db, user_id)
+    return hotels

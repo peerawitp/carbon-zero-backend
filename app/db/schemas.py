@@ -269,6 +269,7 @@ class EventBookingBase(BaseModel):
 
 
 class EventBookingCreate(EventBookingBase):
+    amount: int
     pass
 
 

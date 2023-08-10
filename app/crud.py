@@ -273,17 +273,20 @@ def get_all_events(db: Session):
 
 
 def book_event(db: Session, booking: schemas.EventBookingCreate):
-    db_booking = models.EventBooking(
-        user_id=booking.user_id,
-        event_id=booking.event_id,
-        guest_name=booking.guest_name,
-        guest_email=booking.guest_email,
-    )
-    db.add(db_booking)
-    db.commit()
-    db.refresh(db_booking)
+    bookArr = []
+    for i in range(booking.amount):
+        db_booking = models.EventBooking(
+            user_id=booking.user_id,
+            event_id=booking.event_id,
+            guest_name=booking.guest_name,
+            guest_email=booking.guest_email,
+        )
+        db.add(db_booking)
+        db.commit()
+        db.refresh(db_booking)
+        bookArr.append(db_booking)
 
-    return db_booking
+    return bookArr
 
 
 def get_all_event_bookings(db: Session):
@@ -312,3 +315,26 @@ def get_summary_event(db: Session, event_id: int):
         .scalar()
     )
     return total_bookings
+
+
+def get_user_booked_event(db: Session, user_id: int):
+    return (
+        # get with event detail
+        db.query(models.Event, models.EventBooking)
+        .join(
+            models.EventBooking, models.Event.event_id == models.EventBooking.event_id
+        )
+        .filter(models.EventBooking.user_id == user_id)
+        .all()
+    )
+
+
+def get_user_booked_hotel(db: Session, user_id: int):
+    return (
+        # get with hotel detail
+        db.query(models.Hotel, models.Room, models.Booking)
+        .join(models.Room, models.Hotel.hotel_id == models.Room.hotel_id)
+        .join(models.Booking, models.Room.room_id == models.Booking.room_id)
+        .filter(models.Booking.user_id == user_id)
+        .all()
+    )
