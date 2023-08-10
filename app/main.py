@@ -284,3 +284,69 @@ def upload_new_image(
         upload = crud.upload_new_image(db, news_id, uploadname)
 
     return upload
+
+
+@app.get(
+    "/hotels",
+    summary="Get All Hotels",
+    tags=["Hotels"],
+    response_model=list[schemas.Hotel],
+)
+def get_all_hotels(db: Session = Depends(get_db)):
+    hotels = crud.get_all_hotels(db)
+    return hotels
+
+
+@app.get(
+    "/availableRooms/{hotel_id}",
+    summary="Get Available Rooms",
+    tags=["Hotels"],
+    response_model=list[schemas.Room],
+)
+def get_available_rooms(hotel_id: int, db: Session = Depends(get_db)):
+    rooms = crud.get_available_rooms(db, hotel_id)
+    return rooms
+
+
+@app.get(
+    "/getHotelByRoomId/{room_id}",
+    summary="Get Hotel by Room ID",
+    tags=["Hotels"],
+    response_model=schemas.Hotel,
+)
+def get_hotel_by_room_id(room_id: int, db: Session = Depends(get_db)):
+    hotel = crud.get_hotel_by_room_id(db, room_id)
+    return hotel["Hotel"]
+
+
+@app.get(
+    "/bookings/{user_id}",
+    summary="Get Bookings",
+    tags=["Bookings"],
+    response_model=list[schemas.Booking],
+)
+def get_bookings_by_user_id(user_id: int, db: Session = Depends(get_db)):
+    bookings = crud.get_bookings_by_user_id(db, user_id)
+    return bookings
+
+
+@app.get(
+    "/bookings",
+    summary="Get All Bookings",
+    tags=["Bookings"],
+    response_model=list[schemas.Booking],
+)
+def get_all_bookings(db: Session = Depends(get_db)):
+    bookings = crud.get_all_bookings(db)
+    return bookings
+
+
+@app.post(
+    "/book",
+    summary="Book Room",
+    tags=["Bookings"],
+    response_model=schemas.Booking,
+)
+def book_room(booking: schemas.BookingCreate, db: Session = Depends(get_db)):
+    booking = crud.book_room(db, booking)
+    return booking

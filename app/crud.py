@@ -214,3 +214,45 @@ def upload_new_image(db: Session, new_id: int, image_path: str):
     db.refresh(db_new_image)
 
     return db_new_image
+
+
+def get_all_hotels(db: Session):
+    return db.query(models.Hotel).all()
+
+
+def get_hotel_by_room_id(db: Session, room_id: int):
+    return (
+        db.query(models.Room, models.Hotel, models.Booking)
+        .join(models.Hotel, models.Room.hotel_id == models.Hotel.hotel_id)
+        .join(models.Booking, models.Room.room_id == models.Booking.room_id)
+        .filter(models.Room.room_id == room_id)
+        .first()
+    )
+
+
+def get_available_rooms(db: Session, hotel_id: int):
+    return db.query(models.Room).filter(models.Room.hotel_id == hotel_id).all()
+
+
+def get_bookings_by_user_id(db: Session, user_id: int):
+    return db.query(models.Booking).filter(models.Booking.user_id == user_id).all()
+
+
+def get_all_bookings(db: Session):
+    return db.query(models.Booking).all()
+
+
+def book_room(db: Session, booking: schemas.BookingCreate):
+    db_booking = models.Booking(
+        user_id=booking.user_id,
+        room_id=booking.room_id,
+        check_in_date=booking.check_in_date,
+        check_out_date=booking.check_out_date,
+        guest_name=booking.guest_name,
+        guest_email=booking.guest_email,
+    )
+    db.add(db_booking)
+    db.commit()
+    db.refresh(db_booking)
+
+    return db_booking

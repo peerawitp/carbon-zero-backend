@@ -30,6 +30,8 @@ class User(Base):
         "DiscussionInteraction", back_populates="owner"
     )
 
+    booking = relationship("Booking", back_populates="owner")
+
 
 class UserType(Base):
     __tablename__ = "user_types"
@@ -129,3 +131,58 @@ class DiscussionInteraction(Base):
 
     owner = relationship("User", back_populates="discussion_interactions")
     discussion = relationship("Discussion", back_populates="details")
+
+
+class Hotel(Base):
+    __tablename__ = "hotels"
+
+    hotel_id = Column(Integer, primary_key=True)
+    name = Column(String)
+    stars = Column(Integer)
+    rating = Column(Integer)
+    address = Column(String)
+    city = Column(String)
+    country = Column(String)
+    description = Column(String)
+
+    facilities = relationship("Facility", secondary="hotel_facilities")
+
+
+class Facility(Base):
+    __tablename__ = "facilities"
+
+    facility_id = Column(Integer, primary_key=True)
+    name = Column(String)
+
+
+class HotelFacility(Base):
+    __tablename__ = "hotel_facilities"
+
+    hotel_id = Column(Integer, ForeignKey("hotels.hotel_id"), primary_key=True)
+    facility_id = Column(
+        Integer, ForeignKey("facilities.facility_id"), primary_key=True
+    )
+
+
+class Room(Base):
+    __tablename__ = "rooms"
+
+    room_id = Column(Integer, primary_key=True)
+    hotel_id = Column(Integer, ForeignKey("hotels.hotel_id"))
+    room_type = Column(String)
+    price_per_night = Column(Integer)
+    availability = Column(Integer)
+
+
+class Booking(Base):
+    __tablename__ = "bookings"
+
+    booking_id = Column(Integer, primary_key=True)
+    room_id = Column(Integer, ForeignKey("rooms.room_id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    check_in_date = Column(DateTime)
+    check_out_date = Column(DateTime)
+    guest_name = Column(String)
+    guest_email = Column(String)
+
+    owner = relationship("User", back_populates="booking")

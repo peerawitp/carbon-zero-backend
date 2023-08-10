@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import List
 
 
 class User(BaseModel):
@@ -156,6 +157,81 @@ class DiscussionInteractionCreate(BaseModel):
     discussion_id: int
     user_id: int
     interaction_type: str
+
+    class Config:
+        orm_mode = True
+
+
+class FacilityBase(BaseModel):
+    name: str
+
+
+class FacilityCreate(FacilityBase):
+    pass
+
+
+class Facility(FacilityBase):
+    facility_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class HotelBase(BaseModel):
+    name: str
+    stars: int
+    rating: int
+    address: str
+    city: str
+    country: str
+    description: str
+
+
+class HotelCreate(HotelBase):
+    pass
+
+
+class Hotel(HotelBase):
+    hotel_id: int
+    facilities: List[Facility] = []
+
+    class Config:
+        orm_mode = True
+
+
+class RoomBase(BaseModel):
+    room_type: str
+    price_per_night: int
+    availability: int
+
+
+class RoomCreate(RoomBase):
+    pass
+
+
+class Room(RoomBase):
+    room_id: int
+    hotel_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class BookingBase(BaseModel):
+    room_id: int
+    user_id: int
+    check_in_date: datetime
+    check_out_date: datetime
+    guest_name: str
+    guest_email: str
+
+
+class BookingCreate(BookingBase):
+    pass
+
+
+class Booking(BookingBase):
+    booking_id: int
 
     class Config:
         orm_mode = True
