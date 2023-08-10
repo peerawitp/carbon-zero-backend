@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 
 class User(BaseModel):
@@ -231,6 +231,48 @@ class BookingCreate(BookingBase):
 
 
 class Booking(BookingBase):
+    booking_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class EventBase(BaseModel):
+    event_type: str
+    name: str
+    description: str
+    location: str
+    start_date: datetime
+    end_date: datetime
+    image: Optional[str]
+    price: int
+    capacity: int
+    availability: int
+
+
+class EventCreate(EventBase):
+    pass
+
+
+class Event(EventBase):
+    event_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class EventBookingBase(BaseModel):
+    event_id: int
+    user_id: int
+    guest_name: str
+    guest_email: str
+
+
+class EventBookingCreate(EventBookingBase):
+    pass
+
+
+class EventBooking(EventBookingBase):
     booking_id: int
 
     class Config:

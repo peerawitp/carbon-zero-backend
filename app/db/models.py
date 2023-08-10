@@ -31,6 +31,7 @@ class User(Base):
     )
 
     booking = relationship("Booking", back_populates="owner")
+    event_booking = relationship("EventBooking", back_populates="owner")
 
 
 class UserType(Base):
@@ -186,3 +187,34 @@ class Booking(Base):
     guest_email = Column(String)
 
     owner = relationship("User", back_populates="booking")
+
+
+class Event(Base):
+    __tablename__ = "events"
+
+    event_id = Column(Integer, primary_key=True)
+
+    event_type = Column(String)
+
+    name = Column(String)
+    description = Column(String)
+    location = Column(String)
+    start_date = Column(DateTime)
+    end_date = Column(DateTime)
+    image = Column(String)
+
+    price = Column(Integer)
+    capacity = Column(Integer)
+    availability = Column(Integer)
+
+
+class EventBooking(Base):
+    __tablename__ = "event_bookings"
+
+    booking_id = Column(Integer, primary_key=True)
+    event_id = Column(Integer, ForeignKey("events.event_id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    guest_name = Column(String)
+    guest_email = Column(String)
+
+    owner = relationship("User", back_populates="event_booking")

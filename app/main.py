@@ -341,6 +341,12 @@ def get_all_bookings(db: Session = Depends(get_db)):
     return bookings
 
 
+@app.get("/summaryHotel/{hotel_id}", summary="Get Summary of Hotel", tags=["Hotels"])
+def get_summary_hotel(hotel_id: int, db: Session = Depends(get_db)):
+    summary = crud.get_summary_hotel(db, hotel_id)
+    return {"summary_income": summary}
+
+
 @app.post(
     "/book",
     summary="Book Room",
@@ -350,3 +356,37 @@ def get_all_bookings(db: Session = Depends(get_db)):
 def book_room(booking: schemas.BookingCreate, db: Session = Depends(get_db)):
     booking = crud.book_room(db, booking)
     return booking
+
+
+@app.get("/events", summary="Get All Events", tags=["Events"])
+def get_all_events(db: Session = Depends(get_db)):
+    events = crud.get_all_events(db)
+    return events
+
+
+@app.post(
+    "/bookEvent",
+    summary="Book Event",
+    tags=["Events"],
+    response_model=schemas.EventBooking,
+)
+def book_event(event: schemas.EventBookingCreate, db: Session = Depends(get_db)):
+    event = crud.book_event(db, event)
+    return event
+
+
+@app.get(
+    "/getAllEventBookings",
+    summary="Get All Event Bookings",
+    tags=["Events"],
+    response_model=list[schemas.EventBooking],
+)
+def get_all_event_bookings(db: Session = Depends(get_db)):
+    event_bookings = crud.get_all_event_bookings(db)
+    return event_bookings
+
+
+@app.get("/summaryEvent", summary="Get Summary of Event", tags=["Events"])
+def get_summary_event(event_id: int, db: Session = Depends(get_db)):
+    summary = crud.get_summary_event(db, event_id)
+    return {"summary_income": summary}

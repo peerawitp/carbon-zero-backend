@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 
 from app.utils.certificate import make_certificate
 
@@ -265,3 +266,49 @@ def book_room(db: Session, booking: schemas.BookingCreate):
     db.refresh(db_booking)
 
     return db_booking
+
+
+def get_all_events(db: Session):
+    return db.query(models.Event).all()
+
+
+def book_event(db: Session, booking: schemas.EventBookingCreate):
+    db_booking = models.EventBooking(
+        user_id=booking.user_id,
+        event_id=booking.event_id,
+        guest_name=booking.guest_name,
+        guest_email=booking.guest_email,
+    )
+    db.add(db_booking)
+    db.commit()
+    db.refresh(db_booking)
+
+    return db_booking
+
+
+def get_all_event_bookings(db: Session):
+    return db.query(models.EventBooking).all()
+
+
+def get_summary_hotel(db: Session, hotel_id: int):
+    # get sum of all bookings for a hotel
+    total_bookings = (
+        db.query(func.sum(models.Room.price_per_night))
+        .join(models.Booking, models.Room.room_id == models.Booking.room_id)
+        .filter(models.Room.hotel_id == hotel_id)
+        .scalar()
+    )
+    return total_bookings
+
+
+def get_summary_event(db: Session, event_id: int):
+    # get sum of all bookings for a hotel
+    total_bookings = (
+        db.query(func.sum(models.Event.price))
+        .join(
+            models.EventBooking, models.Event.event_id == models.EventBooking.event_id
+        )
+        .filter(models.Event.event_id == event_id)
+        .scalar()
+    )
+    return total_bookings
