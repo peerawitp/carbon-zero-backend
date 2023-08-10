@@ -290,11 +290,12 @@ def upload_new_image(
     "/hotels",
     summary="Get All Hotels",
     tags=["Hotels"],
-    response_model=list[schemas.Hotel],
 )
 def get_all_hotels(db: Session = Depends(get_db)):
     hotels = crud.get_all_hotels(db)
-    return hotels
+    get_cheapest_rooms = crud.get_cheapest_rooms(db)
+
+    return {"hotels": hotels, "cheapest_rooms": get_cheapest_rooms}
 
 
 @app.get(

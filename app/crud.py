@@ -220,6 +220,15 @@ def get_all_hotels(db: Session):
     return db.query(models.Hotel).all()
 
 
+def get_cheapest_rooms(db: Session):
+    return (
+        db.query(models.Room, models.Hotel)
+        .join(models.Hotel, models.Room.hotel_id == models.Hotel.hotel_id)
+        .order_by(models.Room.price_per_night)
+        .all()
+    )
+
+
 def get_info_by_room_id(db: Session, room_id: int):
     return (
         db.query(models.Room, models.Hotel, models.Booking)
