@@ -386,7 +386,7 @@ def get_all_event_bookings(db: Session = Depends(get_db)):
     return event_bookings
 
 
-@app.get("/summaryEvent", summary="Get Summary of Event", tags=["Events"])
+@app.get("/summaryEvent/{event_id}", summary="Get Summary of Event", tags=["Events"])
 def get_summary_event(event_id: int, db: Session = Depends(get_db)):
     summary = crud.get_summary_event(db, event_id)
     return {"summary_income": summary}
