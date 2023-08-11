@@ -265,6 +265,17 @@ def book_room(db: Session, booking: schemas.BookingCreate):
     db.commit()
     db.refresh(db_booking)
 
+    if db_booking is None:
+        return None
+
+    # update room availability
+    db_room = (
+        db.query(models.Room).filter(models.Room.room_id == booking.room_id).first()
+    )
+    db_room.availability -= 1
+    db.commit()
+    db.refresh(db_room)
+
     return db_booking
 
 
@@ -285,6 +296,17 @@ def book_event(db: Session, booking: schemas.EventBookingCreate):
         db.commit()
         db.refresh(db_booking)
         bookArr.append(db_booking)
+
+    if bookArr is None:
+        return None
+
+    # update event availability
+    db_event = (
+        db.query(models.Event).filter(models.Event.event_id == booking.event_id).first()
+    )
+    db_event.availability -= booking.amount
+    db.commit()
+    db.refresh(db_event)
 
     return bookArr
 
